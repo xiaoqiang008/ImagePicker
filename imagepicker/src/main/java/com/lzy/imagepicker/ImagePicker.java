@@ -12,8 +12,9 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
+
+import androidx.core.content.FileProvider;
 
 import com.lzy.imagepicker.bean.ImageFolder;
 import com.lzy.imagepicker.bean.ImageItem;
@@ -39,8 +40,8 @@ import java.util.Locale;
  * 2017-03-20
  *
  * @author nanchen
- *         采用单例和弱引用解决Intent传值限制导致的异常
- *         ================================================
+ * 采用单例和弱引用解决Intent传值限制导致的异常
+ * ================================================
  */
 public class ImagePicker {
 
@@ -231,7 +232,9 @@ public class ImagePicker {
     }
 
     public void clearSelectedImages() {
-        if (mSelectedImages != null) mSelectedImages.clear();
+        if (mSelectedImages != null) {
+            mSelectedImages.clear();
+        }
     }
 
     public void clear() {
@@ -256,8 +259,11 @@ public class ImagePicker {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            if (Utils.existSDCard()) takeImageFile = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
-            else takeImageFile = Environment.getDataDirectory();
+            if (Utils.existSDCard()) {
+                takeImageFile = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
+            } else {
+                takeImageFile = Environment.getDataDirectory();
+            }
             takeImageFile = createFile(takeImageFile, "IMG_", ".jpg");
             if (takeImageFile != null) {
                 // 默认情况下，即不需要指定intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -318,18 +324,25 @@ public class ImagePicker {
     }
 
     public void addOnImageSelectedListener(OnImageSelectedListener l) {
-        if (mImageSelectedListeners == null) mImageSelectedListeners = new ArrayList<>();
+        if (mImageSelectedListeners == null) {
+            mImageSelectedListeners = new ArrayList<>();
+        }
         mImageSelectedListeners.add(l);
     }
 
     public void removeOnImageSelectedListener(OnImageSelectedListener l) {
-        if (mImageSelectedListeners == null) return;
+        if (mImageSelectedListeners == null) {
+            return;
+        }
         mImageSelectedListeners.remove(l);
     }
 
     public void addSelectedImageItem(int position, ImageItem item, boolean isAdd) {
-        if (isAdd) mSelectedImages.add(item);
-        else mSelectedImages.remove(item);
+        if (isAdd) {
+            mSelectedImages.add(item);
+        } else {
+            mSelectedImages.remove(item);
+        }
         notifyImageSelectedChanged(position, item, isAdd);
     }
 
@@ -341,7 +354,9 @@ public class ImagePicker {
     }
 
     private void notifyImageSelectedChanged(int position, ImageItem item, boolean isAdd) {
-        if (mImageSelectedListeners == null) return;
+        if (mImageSelectedListeners == null) {
+            return;
+        }
         for (OnImageSelectedListener l : mImageSelectedListeners) {
             l.onImageSelected(position, item, isAdd);
         }
